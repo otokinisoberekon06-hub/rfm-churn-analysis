@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Revenue & Churn Analysis — Insight Brief</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-deep:  #c9667a;
+            --pink-mid:   #e8899a;
+            --pink-soft:  #f2b8c2;
+            --pink-blush: #fce8ec;
+            --pink-wash:  #fef6f7;
+            --gold:       #c9a96e;
+            --charcoal:   #2c2420;
+            --warm-grey:  #6b5f5a;
+            --light-grey: #d4ccc9;
+            --cream:      #faf7f5;
+            --white:      #ffffff;
+            --border:     #ecddd9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--cream);
+            color: var(--charcoal);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 48px 20px 64px;
+        }
+        .page { width: 100%; max-width: 780px; }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .topbar-left {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--pink-deep);
+        }
+        .topbar-right {
+            font-size: 11px;
+            color: var(--warm-grey);
+            letter-spacing: 0.05em;
+        }
+        .hero { margin-bottom: 52px; }
+        .hero-eyebrow {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--pink-deep);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            display: inline-block;
+            width: 28px;
+            height: 1px;
+            background-color: var(--pink-deep);
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--charcoal);
+            margin-bottom: 18px;
+            letter-spacing: -0.01em;
+        }
+        .hero h1 em { font-style: normal; color: var(--pink-deep); }
+        .hero-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+        .meta-pill {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background-color: var(--pink-blush);
+            color: var(--pink-deep);
+            border: 1px solid var(--pink-soft);
+        }
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, var(--pink-soft), transparent);
+            margin: 40px 0;
+        }
+        .section { margin-bottom: 44px; }
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .section-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--pink-soft);
+            letter-spacing: 0.05em;
+        }
+        .section-title {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm-grey);
+        }
+        .situation-text {
+            font-size: 15px;
+            line-height: 1.85;
+            color: var(--charcoal);
+            font-weight: 300;
+            max-width: 680px;
+            padding-left: 20px;
+            border-left: 2px solid var(--pink-soft);
+        }
+        .finding {
+            display: grid;
+            grid-template-columns: 36px 1fr;
+            gap: 0 18px;
+            margin-bottom: 18px;
+            padding: 20px 24px;
+            background-color: var(--white);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .finding-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--pink-blush);
+            line-height: 1;
+            padding-top: 2px;
+        }
+        .finding-headline {
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .finding-detail {
+            font-size: 13px;
+            line-height: 1.75;
+            color: var(--warm-grey);
+            font-weight: 300;
+        }
+        .finding-detail strong { color: var(--pink-deep); font-weight: 500; }
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        .impact-card {
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 22px 18px;
+            text-align: center;
+        }
+        .impact-card.churn   { border-top: 3px solid #e07070; }
+        .impact-card.risk    { border-top: 3px solid var(--gold); }
+        .impact-card.active  { border-top: 3px solid var(--pink-deep); }
+        .impact-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            line-height: 1;
+        }
+        .impact-card.churn  .impact-value { color: #c75555; }
+        .impact-card.risk   .impact-value { color: var(--gold); }
+        .impact-card.active .impact-value { color: var(--pink-deep); }
+        .impact-label {
+            font-size: 11px;
+            color: var(--warm-grey);
+            line-height: 1.5;
+        }
+        .impact-note {
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--warm-grey);
+            line-height: 1.7;
+            font-style: italic;
+            padding: 12px 16px;
+            background-color: var(--pink-wash);
+            border-radius: 8px;
+            border: 1px solid var(--pink-blush);
+        }
+        .recommendation {
+            display: grid;
+            grid-template-columns: 36px 1fr;
+            gap: 0 18px;
+            margin-bottom: 16px;
+            padding: 22px 24px;
+            background-color: var(--white);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .rec-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--pink-blush);
+            line-height: 1;
+            padding-top: 2px;
+        }
+        .rec-title {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--pink-deep);
+            margin-bottom: 8px;
+        }
+        .rec-text {
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--warm-grey);
+            font-weight: 300;
+        }
+        .rec-text strong { color: var(--charcoal); font-weight: 500; }
+        .footer {
+            margin-top: 52px;
+            padding-top: 22px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-left  { font-size: 11px; color: var(--light-grey); }
+        .footer-right { font-size: 11px; color: var(--pink-deep); font-weight: 500; }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <div class="topbar">
+        <div class="topbar-left">Portfolio Project 02 &nbsp;·&nbsp; E-Commerce Revenue & Churn Analysis</div>
+        <div class="topbar-right">Python · Pandas · Matplotlib · Seaborn</div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-eyebrow">Executive Insight Brief</div>
+        <h1>Which Customers Are <em>Quietly Leaving</em><br>— and What Is It Costing?</h1>
+        <div class="hero-meta">
+            <span class="meta-pill">1,067,371 Transactions</span>
+            <span class="meta-pill">5,350 Customers</span>
+            <span class="meta-pill">Dec 2009 – Dec 2011</span>
+            <span class="meta-pill">RFM Segmentation</span>
+        </div>
+    </div>
+
+    <!-- SITUATION -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">01</span>
+            <span class="section-title">The Situation</span>
+        </div>
+        <p class="situation-text">
+            This analysis examined two years of transactional data from a UK-based
+            e-commerce retailer: 1,067,371 transactions across 5,350 unique customers,
+            generating £14,723,147.52 in total revenue. The objective was to identify
+            which customers are at risk of leaving, where revenue is concentrated,
+            and what actions would have the highest retention impact.
+            The findings reveal a business with a strong core but significant
+            and quantifiable leakage at the edges.
+        </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- FINDINGS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">02</span>
+            <span class="section-title">Key Findings</span>
+        </div>
+
+        <div class="finding">
+            <div class="finding-num">1</div>
+            <div class="finding-body">
+                <div class="finding-headline">58.1% of customers have gone silent and it is costing £3.78M.</div>
+                <div class="finding-detail">
+                    3,109 of 5,350 customers have not purchased in 64+ days and are classified
+                    as churned. These customers generated <strong>£3,783,910.71 which is 25.7% of all
+                    lifetime revenue</strong> ever produced. For every £4 this business has earned,
+                    £1 came from a customer who has since stopped returning. The At Risk segment
+                    averages 502 days of silence. This is not early disengagement, it is a
+                    customer base that was once active and has been lost gradually, without intervention.
+                </div>
+            </div>
+        </div>
+
+        <div class="finding">
+            <div class="finding-num">2</div>
+            <div class="finding-body">
+                <div class="finding-headline">25.4% of customers generate 68.1% of all revenue.</div>
+                <div class="finding-detail">
+                    Champions just 1,361 customers account for <strong>£10,028,932 of the
+                    £14,723,147 total</strong>. Their average spend of £7,368 is nearly 4× that
+                    of Loyal customers and 19× that of Lost customers. The repeat purchase rate
+                    of 72.4% exceeds the 35% industry benchmark but 41.9% of customers are
+                    carrying 74.3% of revenue. The loyalty foundation is strong.
+                    <strong>The vulnerability is in how narrow it is.</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="finding">
+            <div class="finding-num">3</div>
+            <div class="finding-body">
+                <div class="finding-headline">21.1% of products run 80% of the business.</div>
+                <div class="finding-detail">
+                    1,114 SKUs out of 5,281 generate 80% of all revenue. The remaining 79% of
+                    the catalogue contributes just 20%. The top product alone
+                    <strong>REGENCY CAKESTAND 3 TIER generated £234,185</strong> individually.
+                    This concentration is both an opportunity and a risk: the revenue-critical
+                    SKUs are known and can be prioritised, but a supply disruption on any top-20
+                    product has an immediate, measurable impact on total revenue.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- REVENUE IMPACT -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">03</span>
+            <span class="section-title">Revenue Impact</span>
+        </div>
+        <div class="impact-grid">
+            <div class="impact-card churn">
+                <div class="impact-value">£3.78M</div>
+                <div class="impact-label">Revenue from<br>churned customers</div>
+            </div>
+            <div class="impact-card risk">
+                <div class="impact-value">£1.57M</div>
+                <div class="impact-label">Revenue from At Risk<br>& Needs Attention</div>
+            </div>
+            <div class="impact-card active">
+                <div class="impact-value">£10.93M</div>
+                <div class="impact-label">Revenue from<br>active customers</div>
+            </div>
+        </div>
+        <p class="impact-note">
+            Active customers (41.9% of the base) are carrying 74.3% of all revenue.
+            The churned segment represents 25.7% of lifetime revenue now sitting
+            in an inactive customer base recoverable through targeted retention,
+            not new acquisition spend.
+        </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- RECOMMENDATIONS -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-num">04</span>
+            <span class="section-title">Recommendations</span>
+        </div>
+
+        <div class="recommendation">
+            <div class="rec-num">1</div>
+            <div class="rec-body">
+                <div class="rec-title">Launch a 30-Day Win-Back Campaign for At Risk Customers</div>
+                <div class="rec-text">
+                    The At Risk segment (245 customers, <strong>£372,898 in historical revenue</strong>)
+                    has a proven purchase history, these are former regulars who have gone quiet,
+                    not one-time buyers who drifted. <strong>Priority: customers with M_Score ≥ 3</strong>,
+                    who have the spend profile to return. A targeted re-engagement sequence costs
+                    a fraction of new customer acquisition and targets buyers who already know and
+                    trust the brand.
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation">
+            <div class="rec-num">2</div>
+            <div class="rec-body">
+                <div class="rec-title">Protect the Champions Segment Above All Else</div>
+                <div class="rec-text">
+                    Champions generate <strong>£10,028,932 — 68.1% of total revenue</strong>.
+                    No acquisition campaign can quickly replace a drop in Champions activity.
+                    <strong>Exclusive access, loyalty recognition, and a dedicated communication
+                    cadence</strong> are non-negotiable investments for this group. They should
+                    never be treated as part of the general customer base, their behaviour
+                    is the business.
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation">
+            <div class="rec-num">3</div>
+            <div class="rec-body">
+                <div class="rec-title">Reduce Dependency on Revenue-Concentrated SKUs</div>
+                <div class="rec-text">
+                    The top 20% of products driving 80% of revenue is a reality to manage,
+                    not a problem to solve. The risk is in single points of failure.
+                    <strong>Inventory protection, supplier redundancy and bundle strategy
+                    for the top 20 SKUs</strong> should be treated as a risk management priority.
+                    Introducing adjacent products into high-revenue categories distributes
+                    concentration without disrupting what is already working.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-left">Analysis · UCI Online Retail Dataset v2 · 1,067,371 transactions · Python · Pandas · Matplotlib · Seaborn</div>
+        <div class="footer-right">github.com/otokinisoberekon06-hub/rfm-churn-analysis</div>
+    </div>
+
+</div>
+</body>
+</html>
